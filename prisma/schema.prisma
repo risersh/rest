@@ -10,14 +10,16 @@ generator db {
 // Tenants are the top level of the hierarchy and can own
 // multiple teams and users.
 model Tenant {
-  id         String       @id @default(cuid()) @db.VarChar(25)
-  created    DateTime     @default(now()) @db.Timestamptz()
-  updated    DateTime     @updatedAt @db.Timestamptz()
-  name       String
-  status     String       @default("pending") @db.VarChar(30)
-  User       User[]
-  Team       Team[]
-  Deployment Deployment[]
+  id          String        @id @default(cuid()) @db.VarChar(25)
+  created     DateTime      @default(now()) @db.Timestamptz()
+  updated     DateTime      @updatedAt @db.Timestamptz()
+  name        String
+  status      String        @default("pending") @db.VarChar(30)
+  User        User[]
+  Team        Team[]
+  Deployment  Deployment[]
+  Project     Project[]
+  Environment Environment[]
 
   @@map("tenants")
 }
@@ -31,8 +33,8 @@ model User {
   status    String
   created   DateTime   @default(now()) @db.Timestamptz()
   updated   DateTime   @updatedAt @db.Timestamptz()
-  tenant    Tenant?    @relation(fields: [tenant_id], references: [id])
-  tenant_id String?    @db.VarChar(25)
+  tenant    Tenant     @relation(fields: [tenant_id], references: [id])
+  tenant_id String     @db.VarChar(25)
   teams     TeamUser[]
 
   @@map("users")
@@ -56,13 +58,55 @@ model Team {
   id          String           @id @default(cuid()) @db.VarChar(25)
   created     DateTime         @default(now()) @db.Timestamptz()
   updated     DateTime         @updatedAt @db.Timestamptz()
-  name        String
-  tenant      Tenant?          @relation(fields: [tenant_id], references: [id])
-  tenant_id   String?          @db.VarChar(25)
+  name        String           @db.VarChar(30)
+  description String           @default("") @db.VarChar(255)
+  tenant      Tenant           @relation(fields: [tenant_id], references: [id])
+  tenant_id   String           @db.VarChar(25)
   users       TeamUser[]
   deployments DeploymentTeam[]
+  projects    ProjectTeam[]
 
   @@map("teams")
+}
+
+// Projects are the fourth level of the hierarchy and can belong
+// to one tenant. Projects can belong to multiple teams for sharing.
+model Project {
+  id          String        @id @default(cuid()) @db.VarChar(25)
+  created     DateTime      @default(now()) @db.Timestamptz()
+  updated     DateTime      @updatedAt @db.Timestamptz()
+  name        String        @db.VarChar(30)
+  description String        @default("") @db.VarChar(255)
+  tenant      Tenant        @relation(fields: [tenant_id], references: [id])
+  tenant_id   String        @db.VarChar(25)
+  deployments Deployment[]
+  teams       ProjectTeam[]
+
+  @@map("projects")
+}
+
+model ProjectTeam {
+  project_id String @db.VarChar(25)
+  team_id    String @db.VarChar(25)
+
+  project Project @relation(fields: [project_id], references: [id])
+  team    Team    @relation(fields: [team_id], references: [id])
+
+  @@id([project_id, team_id])
+  @@map("project_teams")
+}
+
+model Environment {
+  id          String       @id @default(cuid()) @db.VarChar(25)
+  created     DateTime     @default(now()) @db.Timestamptz()
+  updated     DateTime     @updatedAt @db.Timestamptz()
+  name        String       @db.VarChar(30)
+  description String       @default("") @db.VarChar(255)
+  tenant      Tenant       @relation(fields: [tenant_id], references: [id])
+  tenant_id   String       @db.VarChar(25)
+  deployments Deployment[]
+
+  @@map("environments")
 }
 
 // DeploymentTeam is a many-to-many relationship between Deployments and Teams.
@@ -80,16 +124,20 @@ model DeploymentTeam {
 // Deployments are the fourth level of the hierarchy and can belong
 // to one tenant. Deployments can belong to multiple teams for sharing.
 model Deployment {
-  id          String           @id @default(cuid()) @db.VarChar(25)
-  created     DateTime         @default(now()) @db.Timestamptz()
-  updated     DateTime         @updatedAt @db.Timestamptz()
-  name        String           @db.VarChar(30)
-  description String?          @db.VarChar(255)
-  status      String           @db.VarChar(30)
-  version     String           @db.VarChar(30)
-  tenant      Tenant?          @relation(fields: [tenant_id], references: [id])
-  tenant_id   String?          @db.VarChar(25)
-  teams       DeploymentTeam[]
+  id             String           @id @default(cuid()) @db.VarChar(25)
+  created        DateTime         @default(now()) @db.Timestamptz()
+  updated        DateTime         @updatedAt @db.Timestamptz()
+  name           String           @db.VarChar(30)
+  description    String           @default("") @db.VarChar(255)
+  status         String           @db.VarChar(30)
+  version        String           @db.VarChar(30)
+  tenant         Tenant           @relation(fields: [tenant_id], references: [id])
+  tenant_id      String           @db.VarChar(25)
+  teams          DeploymentTeam[]
+  project        Project          @relation(fields: [project_id], references: [id])
+  project_id     String           @db.VarChar(25)
+  environment    Environment      @relation(fields: [environment_id], references: [id])
+  environment_id String           @db.VarChar(25)
 
   @@map("deployments")
 }
