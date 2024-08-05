@@ -2,7 +2,7 @@ package auth
 
 import (
 	"github.com/labstack/echo/v4"
-	"github.com/mateothegreat/go-rest-starter/middleware"
+	"github.com/risersh/rest-api/middleware"
 )
 
 func Router(e *echo.Echo) *echo.Group {

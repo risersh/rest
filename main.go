@@ -7,8 +7,9 @@ import (
 	"github.com/joho/godotenv"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
-	"github.com/mateothegreat/go-rest-starter/auth"
-	"github.com/mateothegreat/go-rest-starter/monitoring"
+	"github.com/risersh/rest-api/auth"
+	"github.com/risersh/rest-api/deployment"
+	"github.com/risersh/rest-api/monitoring"
 )
 
 func main() {
@@ -44,6 +45,6 @@ func main() {
 	}))
 
 	auth.Router(e)
-
+	deployment.Router(e)
 	e.Logger.Fatal(e.Start(":8080"))
 }
