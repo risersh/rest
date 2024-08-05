@@ -2,18 +2,22 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"net/http"
 
-	"github.com/joho/godotenv"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
-	"github.com/risersh/rest-api/auth"
-	"github.com/risersh/rest-api/deployment"
-	"github.com/risersh/rest-api/monitoring"
+	"github.com/risersh/rest/auth"
+	"github.com/risersh/rest/conf"
+	"github.com/risersh/rest/deployment"
+	"github.com/risersh/rest/monitoring"
+	"github.com/risersh/rest/util"
 )
 
 func main() {
-	godotenv.Load("../.env.local")
+	conf.Init()
+
+	go util.ConnectRabbitMQ()
 
 	shutdown, err := monitoring.InitTracer()
 	if err != nil {
@@ -46,5 +50,5 @@ func main() {
 
 	auth.Router(e)
 	deployment.Router(e)
-	e.Logger.Fatal(e.Start(":8080"))
+	e.Logger.Fatal(e.Start(fmt.Sprintf(":%d", conf.Config.Port)))
 }
