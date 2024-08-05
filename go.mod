@@ -3,6 +3,7 @@ module github.com/risersh/rest
 go 1.22.0
 
 require (
+	github.com/go-playground/validator/v10 v10.22.0
 	github.com/labstack/echo/v4 v4.12.0
 	github.com/mateothegreat/go-rabbitmq v0.0.0-20240803063638-1a54c0f38163
 	github.com/risersh/config v0.0.0-20240803191625-cc8791101c9d
@@ -18,14 +19,18 @@ require (
 	github.com/elastic/elastic-transport-go/v8 v8.6.0 // indirect
 	github.com/elastic/go-elasticsearch/v8 v8.14.0 // indirect
 	github.com/fatih/color v1.17.0 // indirect
+	github.com/gabriel-vasile/mimetype v1.4.3 // indirect
 	github.com/go-logr/logr v1.4.2 // indirect
 	github.com/go-logr/stdr v1.2.2 // indirect
+	github.com/go-playground/locales v0.14.1 // indirect
+	github.com/go-playground/universal-translator v0.18.1 // indirect
 	github.com/golang-jwt/jwt v3.2.2+incompatible // indirect
 	github.com/google/uuid v1.6.0 // indirect
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.21.0 // indirect
 	github.com/ilyakaznacheev/cleanenv v1.5.0 // indirect
 	github.com/joho/godotenv v1.5.1 // indirect
 	github.com/labstack/gommon v0.4.2 // indirect
+	github.com/leodido/go-urn v1.4.0 // indirect
 	github.com/mateothegreat/go-multilog v0.0.0-20240804220716-7ac35b2b2781 // indirect
 	github.com/mattn/go-colorable v0.1.13 // indirect
 	github.com/mattn/go-isatty v0.0.20 // indirect

@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"net/http"
 
+	"github.com/go-playground/validator/v10"
 	"github.com/labstack/echo/v4"
 	"github.com/risersh/rest/util"
 )
@@ -13,13 +14,18 @@ import (
 // It is used to send a deployment trigger to the controller
 // from the web user interface or other api clients.
 type TriggerRequest struct {
-	DeploymentID string `json:"deploymentId"`
+	DeploymentID string `json:"deploymentId" validate:"required,min=1,max=30"`
 }
 
 func Trigger(c echo.Context) error {
 	// Deserialize the request body in to the request struct.
 	req := &TriggerRequest{}
 	if err := c.Bind(req); err != nil {
+		return c.JSON(http.StatusBadRequest, err)
+	}
+
+	validate := validator.New()
+	if err := validate.Struct(req); err != nil {
 		return c.JSON(http.StatusBadRequest, err)
 	}
 
