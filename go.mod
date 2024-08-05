@@ -36,6 +36,7 @@ require (
 	github.com/mattn/go-isatty v0.0.20 // indirect
 	github.com/rabbitmq/amqp091-go v1.10.0 // indirect
 	github.com/risersh/util v0.0.0-20240803211153-9594957bfa88 // indirect
+	github.com/steebchen/prisma-client-go v0.38.0 // indirect
 	github.com/valyala/bytebufferpool v1.0.0 // indirect
 	github.com/valyala/fasttemplate v1.2.2 // indirect
 	go.opentelemetry.io/otel/exporters/otlp/otlptrace v1.28.0 // indirect
