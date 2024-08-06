@@ -2,7 +2,6 @@ package registration
 
 import (
 	"context"
-	"log"
 	"net/http"
 	"time"
 
@@ -29,29 +28,31 @@ func ConfirmRegistration(c echo.Context) error {
 	var req ConfirmRegistrationRequest
 
 	if err := c.Bind(&req); err != nil {
-		return responses.HandleException(c, http.StatusInternalServerError, "invalid request", err)
+		return responses.HandleException(c, http.StatusBadRequest, "invalid request", err)
 	}
 
 	validate := validator.New()
 	err := validate.Struct(req)
 
 	if err != nil {
-		return responses.HandleException(c, http.StatusInternalServerError, "invalid request", err)
+		return responses.HandleException(c, http.StatusBadRequest, "invalid request", err)
 	}
 
 	registration, err := database.DatabaseClient.Registration.FindFirst(
 		db.Registration.Email.Equals(req.Email),
 		db.Registration.Code.Equals(req.Code),
+		db.Registration.Status.Equals("PENDING"),
 	).Exec(context.Background())
-
-	log.Printf("registration: %v", registration)
 	if err != nil && err == db.ErrNotFound {
 		return responses.HandleException(c, http.StatusInternalServerError, "could not find registration", err)
 	}
 
-	// database.DatabaseClient.Registration.FindUnique(
-	// 	db.Registration.ID.Equals(registration.ID),
-	// ).Delete().Exec(context.Background())
+	_, err = database.DatabaseClient.Registration.FindUnique(
+		db.Registration.ID.Equals(registration.ID),
+	).Delete().Exec(context.Background())
+	if err != nil {
+		return responses.HandleException(c, http.StatusInternalServerError, "could not delete registration", err)
+	}
 
 	tenant, err := database.DatabaseClient.Tenant.CreateOne(
 		db.Tenant.Name.Set("Default"),
@@ -62,20 +63,12 @@ func ConfirmRegistration(c echo.Context) error {
 		return responses.HandleException(c, http.StatusInternalServerError, "could not create tenant", err)
 	}
 
-	log.Printf("tenant: %v", tenant)
-
-	if err != nil {
-		log.Printf("error: %v", err)
-		return responses.HandleException(c, http.StatusInternalServerError, "could not find role", err)
-	}
-
 	user, err := database.DatabaseClient.User.CreateOne(
 		db.User.Email.Set(req.Email),
 		db.User.Password.Set(registration.Password),
 		db.User.Status.Set("ACTIVE"),
 		db.User.Tenant.Link(db.Tenant.ID.Equals(tenant.ID)),
 	).Exec(context.Background())
-
 	if err != nil {
 		return responses.HandleException(c, http.StatusInternalServerError, "could not create user", err)
 	}
@@ -84,7 +77,6 @@ func ConfirmRegistration(c echo.Context) error {
 		db.Session.Status.Set("ACTIVE"),
 		db.Session.User.Link(db.User.ID.Equals(user.ID)),
 	).Exec(context.Background())
-
 	if err != nil {
 		return responses.HandleException(c, http.StatusInternalServerError, "could not create session", err)
 	}
@@ -92,7 +84,6 @@ func ConfirmRegistration(c echo.Context) error {
 	token := security.PasetoSign(sessions.PrivateKey, sessions.SessionClaims{
 		ID: session.ID,
 	}, time.Now().Add(time.Duration(conf.Config.Session.Duration)*time.Hour))
-
 	if err != nil {
 		return responses.HandleException(c, http.StatusInternalServerError, "could not sign jwt", err)
 	}

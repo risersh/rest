@@ -10,8 +10,11 @@ import (
 	"github.com/risersh/rest/auth"
 	"github.com/risersh/rest/conf"
 	"github.com/risersh/rest/deployments"
+	"github.com/risersh/rest/features"
+	"github.com/risersh/rest/invitations"
 	"github.com/risersh/rest/monitoring"
 	"github.com/risersh/rest/registration"
+	"github.com/risersh/rest/sessions"
 	"github.com/risersh/rest/util"
 	"github.com/risersh/rest/util/database"
 )
@@ -19,8 +22,10 @@ import (
 func main() {
 	conf.Init()
 
+	go monitoring.Setup()
 	go util.ConnectRabbitMQ()
 	go database.Connect(conf.Config.Database.URI)
+	go sessions.InitKeys()
 
 	shutdown, err := monitoring.InitTracer()
 	if err != nil {
@@ -32,9 +37,7 @@ func main() {
 	// e.Use(monitoring.OtelMiddleware)
 	e.Use(middleware.Logger())
 	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
-		AllowOrigins: []string{
-			"http://localhost:*",
-		},
+		AllowOrigins: conf.Config.Server.Cors.Origins,
 		AllowMethods: []string{
 			http.MethodGet,
 			http.MethodPost,
@@ -52,8 +55,10 @@ func main() {
 	}))
 
 	auth.Router(e)
+	features.Router(e)
 	deployments.Router(e)
 	registration.Router(e)
+	invitations.Router(e)
 
-	e.Logger.Fatal(e.Start(fmt.Sprintf(":%d", conf.Config.Port)))
+	e.Logger.Fatal(e.Start(fmt.Sprintf(":%d", conf.Config.Server.Port)))
 }

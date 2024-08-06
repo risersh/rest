@@ -12,7 +12,12 @@ var Config *Conf
 
 type Conf struct {
 	config.BaseConfig
-	Port    int `yaml:"port" env:"PORT" env-default:"8080"`
+	Server struct {
+		Port int `yaml:"port" env:"PORT" env-default:"8080"`
+		Cors struct {
+			Origins []string `yaml:"origins" env:"CORS_ORIGINS"`
+		} `yaml:"cors" env-prefix:"CORS_"`
+	} `yaml:"server" env-prefix:"SERVER_"`
 	Session struct {
 		Duration int `yaml:"duration" env:"SESSIONS_DURATION" env-default:"24"`
 	} `yaml:"session" env-prefix:"SESSIONS_"`

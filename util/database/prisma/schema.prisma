@@ -7,6 +7,21 @@ generator db {
   provider = "go run github.com/steebchen/prisma-client-go"
 }
 
+// Features are keys that can be used to enable flags for repositories,
+// deployments, and environments.
+model Feature {
+  id           String              @id @default(cuid()) @db.VarChar(25)
+  created      DateTime            @default(now()) @db.Timestamptz()
+  updated      DateTime            @updatedAt @db.Timestamptz()
+  group        String              @db.VarChar(30)
+  name         String              @db.VarChar(30)
+  description  String              @default("") @db.VarChar(1000)
+  repositories RepositoryFeature[]
+
+  @@unique([group, name])
+  @@map("features")
+}
+
 // Registrations allow users to register for a new account by
 // entering their email address. The user will receive a code
 // to enter on the frontend to create a password.
@@ -39,11 +54,11 @@ model Invitation {
   tenant_id String   @db.VarChar(25)
   created   DateTime @default(now()) @db.Timestamptz()
   updated   DateTime @updatedAt @db.Timestamptz()
-  email     String   @db.VarChar(255)
+  email     String   @db.VarChar(1000)
   status    String   @default("pending") @db.VarChar(30)
   role      String   @db.VarChar(30)
   code      String   @db.VarChar(6)
-  message   String   @db.VarChar(255)
+  message   String   @db.VarChar(1000)
   type      String   @db.VarChar(30)
   context   String   @db.VarChar(25)
   user      User?    @relation(fields: [user_id], references: [id])
@@ -66,6 +81,7 @@ model Tenant {
   Project     Project[]
   Environment Environment[]
   Invitation  Invitation[]
+  Repository  Repository[]
 
   @@map("tenants")
 }
@@ -109,7 +125,7 @@ model Team {
   created     DateTime         @default(now()) @db.Timestamptz()
   updated     DateTime         @updatedAt @db.Timestamptz()
   name        String           @db.VarChar(30)
-  description String           @default("") @db.VarChar(255)
+  description String           @default("") @db.VarChar(1000)
   tenant      Tenant           @relation(fields: [tenant_id], references: [id])
   tenant_id   String           @db.VarChar(25)
   users       TeamUser[]
@@ -126,7 +142,7 @@ model Project {
   created     DateTime      @default(now()) @db.Timestamptz()
   updated     DateTime      @updatedAt @db.Timestamptz()
   name        String        @db.VarChar(30)
-  description String        @default("") @db.VarChar(255)
+  description String        @default("") @db.VarChar(1000)
   tenant      Tenant        @relation(fields: [tenant_id], references: [id])
   tenant_id   String        @db.VarChar(25)
   deployments Deployment[]
@@ -148,12 +164,41 @@ model ProjectTeam {
   @@map("project_teams")
 }
 
+model Repository {
+  id                String              @id @default(cuid()) @db.VarChar(25)
+  created           DateTime            @default(now()) @db.Timestamptz()
+  updated           DateTime            @updatedAt @db.Timestamptz()
+  name              String              @db.VarChar(30)
+  description       String              @default("") @db.VarChar(1000)
+  tenant            Tenant              @relation(fields: [tenant_id], references: [id])
+  tenant_id         String              @db.VarChar(25)
+  type              String              @db.VarChar(30)
+  public            Boolean             @default(false)
+  RepositoryFeature RepositoryFeature[]
+
+  @@unique([tenant_id, name])
+  @@map("repositories")
+}
+
+model RepositoryFeature {
+  id            String     @id @default(cuid()) @db.VarChar(25)
+  created       DateTime   @default(now()) @db.Timestamptz()
+  updated       DateTime   @updatedAt @db.Timestamptz()
+  repository    Repository @relation(fields: [repository_id], references: [id])
+  repository_id String     @db.VarChar(25)
+  feature       Feature    @relation(fields: [feature_id], references: [id])
+  feature_id    String     @db.VarChar(25)
+
+  @@unique([repository_id, feature_id])
+  @@map("repository_features")
+}
+
 model Environment {
   id          String       @id @default(cuid()) @db.VarChar(25)
   created     DateTime     @default(now()) @db.Timestamptz()
   updated     DateTime     @updatedAt @db.Timestamptz()
   name        String       @db.VarChar(30)
-  description String       @default("") @db.VarChar(255)
+  description String       @default("") @db.VarChar(1000)
   tenant      Tenant       @relation(fields: [tenant_id], references: [id])
   tenant_id   String       @db.VarChar(25)
   deployments Deployment[]
@@ -182,7 +227,7 @@ model Deployment {
   created        DateTime         @default(now()) @db.Timestamptz()
   updated        DateTime         @updatedAt @db.Timestamptz()
   name           String           @db.VarChar(30)
-  description    String           @default("") @db.VarChar(255)
+  description    String           @default("") @db.VarChar(1000)
   status         String           @db.VarChar(30)
   version        String           @db.VarChar(30)
   tenant         Tenant           @relation(fields: [tenant_id], references: [id])
