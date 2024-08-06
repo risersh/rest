@@ -5,6 +5,7 @@ import (
 	"os"
 
 	"github.com/risersh/config/config"
+	"github.com/risersh/notifications"
 )
 
 var Config *Conf
@@ -15,6 +16,10 @@ type Conf struct {
 	Session struct {
 		Duration int `yaml:"duration" env:"SESSIONS_DURATION" env-default:"24"`
 	} `yaml:"session" env-prefix:"SESSIONS_"`
+	Branding     notifications.Branding `yaml:"branding"`
+	Registration struct {
+		Code string `yaml:"code" env:"REGISTRATION_INTERNAL_CODE"`
+	} `yaml:"registration" env-prefix:"REGISTRATION_"`
 }
 
 func Init() {

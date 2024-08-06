@@ -9,15 +9,18 @@ import (
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/risersh/rest/auth"
 	"github.com/risersh/rest/conf"
-	"github.com/risersh/rest/deployment"
+	"github.com/risersh/rest/deployments"
 	"github.com/risersh/rest/monitoring"
+	"github.com/risersh/rest/registration"
 	"github.com/risersh/rest/util"
+	"github.com/risersh/rest/util/database"
 )
 
 func main() {
 	conf.Init()
 
 	go util.ConnectRabbitMQ()
+	go database.Connect(conf.Config.Database.URI)
 
 	shutdown, err := monitoring.InitTracer()
 	if err != nil {
@@ -49,6 +52,8 @@ func main() {
 	}))
 
 	auth.Router(e)
-	deployment.Router(e)
+	deployments.Router(e)
+	registration.Router(e)
+
 	e.Logger.Fatal(e.Start(fmt.Sprintf(":%d", conf.Config.Port)))
 }

@@ -1,3 +1,7 @@
+aidanwoods.dev/go-paseto v1.5.1 h1:IvT7wk7jmeTff6wyk7RlS6uAjUIAKU4MU2hkqr95lCo=
+aidanwoods.dev/go-paseto v1.5.1/go.mod h1:9J13iCMdWrkfK1AxAg9QDHLaDMYSEP1ldbFiR+DfmVc=
+aidanwoods.dev/go-result v0.1.0 h1:y/BMIRX6q3HwaorX1Wzrjo3WUdiYeyWbvGe18hKS3K8=
+aidanwoods.dev/go-result v0.1.0/go.mod h1:yridkWghM7AXSFA6wzx0IbsurIm1Lhuro3rYef8FBHM=
 github.com/BurntSushi/toml v1.2.1/go.mod h1:CxXYINrC8qIiEnFrOxCa7Jy5BFHlXnUU2pbicEuybxQ=
 github.com/BurntSushi/toml v1.4.0 h1:kuoIxZQy2WRRk1pttg9asf+WVv6tWQuBNVmK8+nqPr0=
 github.com/BurntSushi/toml v1.4.0/go.mod h1:ukJfTF/6rtPPRCnwkur4qwRxa8vTRFBF0uk2lLoLwho=
@@ -28,6 +32,8 @@ github.com/go-playground/validator/v10 v10.22.0 h1:k6HsTZ0sTnROkhS//R0O+55JgM8C4
 github.com/go-playground/validator/v10 v10.22.0/go.mod h1:dbuPbCMFw/DrkbEynArYaCwl3amGuJotoKCe95atGMM=
 github.com/golang-jwt/jwt v3.2.2+incompatible h1:IfV12K8xAKAnZqdXVzCZ+TOjboZ2keLg81eXfW3O+oY=
 github.com/golang-jwt/jwt v3.2.2+incompatible/go.mod h1:8pz2t5EyA70fFQQSrl6XZXzqecmYZeUEB8OUGHkxJ+I=
+github.com/golang-jwt/jwt/v4 v4.5.0 h1:7cYmW1XlMY7h7ii7UhUyChSgS5wUJEnm9uZVTGqOWzg=
+github.com/golang-jwt/jwt/v4 v4.5.0/go.mod h1:m21LjoU+eqJr34lmDMbreY2eSTRJ1cv77w39/MY0Ch0=
 github.com/google/go-cmp v0.6.0 h1:ofyhxvXcZhMsU5ulbFiLKl/XBFqE1GSq7atu8tAmTRI=
 github.com/google/go-cmp v0.6.0/go.mod h1:17dUlkBOakJ0+DkrSSNjCkIjxS6bF9zb3elmeNGIjoY=
 github.com/google/uuid v1.6.0 h1:NIvaJDMOsjHA8n1jAhLSgzrAzy1Hgr+hNrb57e+94F0=
@@ -57,6 +63,10 @@ github.com/mattn/go-colorable v0.1.13/go.mod h1:7S9/ev0klgBDR4GtXTXX8a3vIGJpMovk
 github.com/mattn/go-isatty v0.0.16/go.mod h1:kYGgaQfpe5nmfYZH+SKPsOc2e4SrIfOl2e/yFXSvRLM=
 github.com/mattn/go-isatty v0.0.20 h1:xfD0iDuEKnDkl03q4limB+vH+GxLEtL/jb4xVJSWWEY=
 github.com/mattn/go-isatty v0.0.20/go.mod h1:W+V8PltTTMOvKvAeJH7IuucS94S2C6jfK/D7dTCTo3Y=
+github.com/nvr-ai/go-mail v0.0.0-20240104044921-6dbafa79546f h1:BxlpIEFbymo8mvmhd11hxmJ/Ax3altpoc5VykV13Ydc=
+github.com/nvr-ai/go-mail v0.0.0-20240104044921-6dbafa79546f/go.mod h1:tLw4xkM6MgU77J/f79p52uU5x/wTxMtewIFk3jNoZKc=
+github.com/nvr-ai/go-util v0.0.0-20231226162050-9d6760b1b253 h1:2HWcP9jatlIkkJAk5GxWLiCG3hjRYLX4rLFgEPN5CiE=
+github.com/nvr-ai/go-util v0.0.0-20231226162050-9d6760b1b253/go.mod h1:q1l89TIrtiyGLe13BeO7515m9MC4GkRsqBU0nXpm/3o=
 github.com/pmezard/go-difflib v1.0.0 h1:4DBwDE0NGyQoBHbLQYPwSUPoCMWR5BEzIk/f1lZbAQM=
 github.com/pmezard/go-difflib v1.0.0/go.mod h1:iKH77koFhYxTK1pcRnkKkqfTogsbg7gZNVY4sRDYZ/4=
 github.com/rabbitmq/amqp091-go v1.10.0 h1:STpn5XsHlHGcecLmMFCtg7mqq0RnD+zFr4uzukfVhBw=
@@ -67,6 +77,12 @@ github.com/risersh/util v0.0.0-20240803211153-9594957bfa88 h1:F44dBQG2RYmNCjjCuA
 github.com/risersh/util v0.0.0-20240803211153-9594957bfa88/go.mod h1:LK/xCf6ynIxmFelzioSXpIpYuILHfRjSyJqAK40QGTU=
 github.com/rogpeppe/go-internal v1.12.0 h1:exVL4IDcn6na9z1rAb56Vxr+CgyK3nn3O+epU5NdKM8=
 github.com/rogpeppe/go-internal v1.12.0/go.mod h1:E+RYuTGaKKdloAfM02xzb0FW3Paa99yedzYV+kq4uf4=
+github.com/sendgrid/rest v2.6.9+incompatible h1:1EyIcsNdn9KIisLW50MKwmSRSK+ekueiEMJ7NEoxJo0=
+github.com/sendgrid/rest v2.6.9+incompatible/go.mod h1:kXX7q3jZtJXK5c5qK83bSGMdV6tsOE70KbHoqJls4lE=
+github.com/sendgrid/sendgrid-go v3.14.0+incompatible h1:KDSasSTktAqMJCYClHVE94Fcif2i7P7wzISv1sU6DUA=
+github.com/sendgrid/sendgrid-go v3.14.0+incompatible/go.mod h1:QRQt+LX/NmgVEvmdRw0VT/QgUn499+iza2FnDca9fg8=
+github.com/shopspring/decimal v1.4.0 h1:bxl37RwXBklmTi0C79JfXCEBD1cqqHt0bbgBAGFp81k=
+github.com/shopspring/decimal v1.4.0/go.mod h1:gawqmDU56v4yIKSwfBSFip1HdCCXN8/+DMd9qYNcwME=
 github.com/steebchen/prisma-client-go v0.38.0 h1:zQasW4H66zvW3o8wI7vkWbCuW9S89cmD7zI3+fkUmFs=
 github.com/steebchen/prisma-client-go v0.38.0/go.mod h1:wp2xU9HO5WIefc65vcl1HOiFUzaHKyOhHw5atrzs8hc=
 github.com/stretchr/testify v1.9.0 h1:HtqpIVDClZ4nwg75+f6Lvsy/wHu+3BoSGCbBAcpTsTg=

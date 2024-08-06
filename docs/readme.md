@@ -29,4 +29,14 @@ Generates schema documentation and ERD.
 
 This will output to the [tmp/schemaspy](tmp/schemaspy) directory. You can then open the index.html file in your browser to view the documentation.
 
-![alt text](<Google Chrome-000020@2x.png>)
+| Argument  | Description                                              |
+| --------- | -------------------------------------------------------- |
+| -- --open | Opens the schemaspy report in your browser (macOS only). |
+
+Example:
+
+```bash
+make db/spy -- --open
+```
+
+![alt text](erd.svg)

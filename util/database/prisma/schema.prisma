@@ -7,6 +7,51 @@ generator db {
   provider = "go run github.com/steebchen/prisma-client-go"
 }
 
+// Registrations allow users to register for a new account by
+// entering their email address. The user will receive a code
+// to enter on the frontend to create a password.
+model Registration {
+  id       String   @id @default(cuid()) @db.VarChar(25)
+  created  DateTime @default(now()) @db.Timestamptz()
+  email    String   @unique
+  password String
+  status   String
+  role     String
+  code     String
+
+  @@map("registrations")
+}
+
+model Session {
+  id      String   @id @default(cuid()) @db.VarChar(25)
+  created DateTime @default(now()) @db.Timestamptz()
+  updated DateTime @updatedAt @db.Timestamptz()
+  status  String   @db.VarChar(30)
+  user    User     @relation(fields: [user_id], references: [id])
+  user_id String   @db.VarChar(25)
+
+  @@map("sessions")
+}
+
+model Invitation {
+  id        String   @id @default(cuid()) @db.VarChar(25)
+  tenant    Tenant   @relation(fields: [tenant_id], references: [id])
+  tenant_id String   @db.VarChar(25)
+  created   DateTime @default(now()) @db.Timestamptz()
+  updated   DateTime @updatedAt @db.Timestamptz()
+  email     String   @db.VarChar(255)
+  status    String   @default("pending") @db.VarChar(30)
+  role      String   @db.VarChar(30)
+  code      String   @db.VarChar(6)
+  message   String   @db.VarChar(255)
+  type      String   @db.VarChar(30)
+  context   String   @db.VarChar(25)
+  user      User?    @relation(fields: [user_id], references: [id])
+  user_id   String?  @db.VarChar(25)
+
+  @@map("invitations")
+}
+
 // Tenants are the top level of the hierarchy and can own
 // multiple teams and users.
 model Tenant {
@@ -20,6 +65,7 @@ model Tenant {
   Deployment  Deployment[]
   Project     Project[]
   Environment Environment[]
+  Invitation  Invitation[]
 
   @@map("tenants")
 }
@@ -27,15 +73,17 @@ model Tenant {
 // Users are the second level of the hierarchy and can belong
 // to multiple teams. Users must belong to one tenant.
 model User {
-  id        String     @id @default(cuid()) @db.VarChar(25)
-  email     String     @unique
-  password  String
-  status    String
-  created   DateTime   @default(now()) @db.Timestamptz()
-  updated   DateTime   @updatedAt @db.Timestamptz()
-  tenant    Tenant     @relation(fields: [tenant_id], references: [id])
-  tenant_id String     @db.VarChar(25)
-  teams     TeamUser[]
+  id         String       @id @default(cuid()) @db.VarChar(25)
+  email      String       @unique
+  password   String
+  status     String
+  created    DateTime     @default(now()) @db.Timestamptz()
+  updated    DateTime     @updatedAt @db.Timestamptz()
+  tenant     Tenant       @relation(fields: [tenant_id], references: [id])
+  tenant_id  String       @db.VarChar(25)
+  teams      TeamUser[]
+  sessions   Session[]
+  Invitation Invitation[]
 
   @@map("users")
 }
@@ -48,8 +96,10 @@ model TeamUser {
   user User @relation(fields: [user_id], references: [id])
   team Team @relation(fields: [team_id], references: [id])
 
+  role String @db.VarChar(30)
+
   @@id([user_id, team_id])
-  @@map("user_team")
+  @@map("user_teams")
 }
 
 // Teams are the third level of the hierarchy and can belong
@@ -92,6 +142,8 @@ model ProjectTeam {
   project Project @relation(fields: [project_id], references: [id])
   team    Team    @relation(fields: [team_id], references: [id])
 
+  role String @db.VarChar(30)
+
   @@id([project_id, team_id])
   @@map("project_teams")
 }
@@ -117,8 +169,10 @@ model DeploymentTeam {
   deployment Deployment @relation(fields: [deployment_id], references: [id])
   team       Team       @relation(fields: [team_id], references: [id])
 
+  role String @db.VarChar(30)
+
   @@id([deployment_id, team_id])
-  @@map("deployment_team")
+  @@map("deployment_teams")
 }
 
 // Deployments are the fourth level of the hierarchy and can belong
