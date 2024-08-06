@@ -70,18 +70,21 @@ model Invitation {
 // Tenants are the top level of the hierarchy and can own
 // multiple teams and users.
 model Tenant {
-  id          String        @id @default(cuid()) @db.VarChar(25)
-  created     DateTime      @default(now()) @db.Timestamptz()
-  updated     DateTime      @updatedAt @db.Timestamptz()
-  name        String
-  status      String        @default("pending") @db.VarChar(30)
-  User        User[]
-  Team        Team[]
-  Deployment  Deployment[]
-  Project     Project[]
-  Environment Environment[]
-  Invitation  Invitation[]
-  Repository  Repository[]
+  id            String        @id @default(cuid()) @db.VarChar(25)
+  created       DateTime      @default(now()) @db.Timestamptz()
+  updated       DateTime      @updatedAt @db.Timestamptz()
+  name          String
+  status        String        @default("pending") @db.VarChar(30)
+  users         User[]
+  teams         Team[]
+  deployments   Deployment[]
+  projects      Project[]
+  environments  Environment[]
+  invitations   Invitation[]
+  repositories  Repository[]
+  git_providers GitProvider[]
+  ingress_hosts IngressHost[]
+  secrets       Secret[]
 
   @@map("tenants")
 }
@@ -89,17 +92,17 @@ model Tenant {
 // Users are the second level of the hierarchy and can belong
 // to multiple teams. Users must belong to one tenant.
 model User {
-  id         String       @id @default(cuid()) @db.VarChar(25)
-  email      String       @unique
-  password   String
-  status     String
-  created    DateTime     @default(now()) @db.Timestamptz()
-  updated    DateTime     @updatedAt @db.Timestamptz()
-  tenant     Tenant       @relation(fields: [tenant_id], references: [id])
-  tenant_id  String       @db.VarChar(25)
-  teams      TeamUser[]
-  sessions   Session[]
-  Invitation Invitation[]
+  id          String       @id @default(cuid()) @db.VarChar(25)
+  email       String       @unique
+  password    String
+  status      String
+  created     DateTime     @default(now()) @db.Timestamptz()
+  updated     DateTime     @updatedAt @db.Timestamptz()
+  tenant      Tenant       @relation(fields: [tenant_id], references: [id])
+  tenant_id   String       @db.VarChar(25)
+  teams       TeamUser[]
+  sessions    Session[]
+  invitations Invitation[]
 
   @@map("users")
 }
@@ -223,20 +226,77 @@ model DeploymentTeam {
 // Deployments are the fourth level of the hierarchy and can belong
 // to one tenant. Deployments can belong to multiple teams for sharing.
 model Deployment {
-  id             String           @id @default(cuid()) @db.VarChar(25)
-  created        DateTime         @default(now()) @db.Timestamptz()
-  updated        DateTime         @updatedAt @db.Timestamptz()
-  name           String           @db.VarChar(30)
-  description    String           @default("") @db.VarChar(1000)
-  status         String           @db.VarChar(30)
-  version        String           @db.VarChar(30)
-  tenant         Tenant           @relation(fields: [tenant_id], references: [id])
-  tenant_id      String           @db.VarChar(25)
-  teams          DeploymentTeam[]
-  project        Project          @relation(fields: [project_id], references: [id])
-  project_id     String           @db.VarChar(25)
-  environment    Environment      @relation(fields: [environment_id], references: [id])
-  environment_id String           @db.VarChar(25)
+  id              String           @id @default(cuid()) @db.VarChar(25)
+  created         DateTime         @default(now()) @db.Timestamptz()
+  updated         DateTime         @updatedAt @db.Timestamptz()
+  name            String           @db.VarChar(30)
+  description     String           @default("") @db.VarChar(1000)
+  status          String           @db.VarChar(30)
+  version         String           @db.VarChar(30)
+  tenant          Tenant           @relation(fields: [tenant_id], references: [id])
+  tenant_id       String           @db.VarChar(25)
+  teams           DeploymentTeam[]
+  ref             String           @db.VarChar(100)
+  project         Project          @relation(fields: [project_id], references: [id])
+  project_id      String           @db.VarChar(25)
+  environment     Environment      @relation(fields: [environment_id], references: [id])
+  environment_id  String           @db.VarChar(25)
+  ingress_host    IngressHost      @relation(fields: [ingress_host_id], references: [id])
+  ingress_host_id String           @db.VarChar(25)
 
   @@map("deployments")
+}
+
+model IngressHost {
+  id          String       @id @default(cuid()) @db.VarChar(25)
+  created     DateTime     @default(now()) @db.Timestamptz()
+  updated     DateTime     @updatedAt @db.Timestamptz()
+  name        String       @db.VarChar(30)
+  type        String       @db.VarChar(30)
+  tenant      Tenant       @relation(fields: [tenant_id], references: [id])
+  tenant_id   String       @db.VarChar(25)
+  deployments Deployment[]
+
+  @@map("ingress_hosts")
+}
+
+model GitProvider {
+  id        String   @id @default(cuid()) @db.VarChar(25)
+  created   DateTime @default(now()) @db.Timestamptz()
+  updated   DateTime @updatedAt @db.Timestamptz()
+  name      String   @db.VarChar(30)
+  type      String   @db.VarChar(30)
+  token     String   @db.VarChar(1000)
+  tenant    Tenant   @relation(fields: [tenant_id], references: [id])
+  tenant_id String   @db.VarChar(25)
+
+  @@map("git_providers")
+}
+
+model SecretBackend {
+  id      String   @id @default(cuid()) @db.VarChar(25)
+  created DateTime @default(now()) @db.Timestamptz()
+  updated DateTime @updatedAt @db.Timestamptz()
+  name    String   @db.VarChar(30)
+  type    String   @db.VarChar(30)
+  creds   String   @db.VarChar(5000)
+  secrets Secret[]
+
+  @@map("secret_backends")
+}
+
+model Secret {
+  id         String         @id @default(cuid()) @db.VarChar(25)
+  created    DateTime       @default(now()) @db.Timestamptz()
+  updated    DateTime       @updatedAt @db.Timestamptz()
+  name       String         @db.VarChar(30)
+  value      String?        @db.VarChar(1000)
+  scope      String         @db.VarChar(30)
+  context    String         @db.VarChar(25)
+  tenant     Tenant         @relation(fields: [tenant_id], references: [id])
+  tenant_id  String         @db.VarChar(25)
+  backend    SecretBackend? @relation(fields: [backend_id], references: [id])
+  backend_id String?        @db.VarChar(25)
+
+  @@map("secrets")
 }
